@@ -1,0 +1,17 @@
+{
+  "sonKelime": "korelasyon",
+  "sonHarf": "n",
+  "sonKullaniciID": "704300767271583804",
+  "oyunAktif": true,
+  "oyuncular": {
+    "704300767271583804": {
+      "kelimeSayisi": 2,
+      "kullaniciAdi": "mentoran"
+    },
+    "650052405420883969": {
+      "kelimeSayisi": 1,
+      "kullaniciAdi": "yarlighan"
+    }
+  },
+  "kanalID": "827281373290299413"
+}
