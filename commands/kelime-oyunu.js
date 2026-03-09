@@ -1,6 +1,6 @@
 // commands/kelime-oyunu.js
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
-const { oyunuSifirla, durumGetir, kanalBelirle, kanalSifirla } = require('../games/sozcukturetme');
+const { oyunuSifirla, durumGetir, kanalBelirle, kanalSifirla, puanTablosuGetir, puanTablosuSifirla } = require('../games/sozcukturetme');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -27,7 +27,15 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('kanal-sifirla')
-                .setDescription('Oyun kanalı ayarını sıfırlar (tüm kanallarda oynanabilir) (Sadece yöneticiler)')
+                .setDescription('Oyun kanalı ayarını sıfırlar (tüm kanallarda oynanabilir) (Sadece yöneticiler)'))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('puan-tablosu')
+                .setDescription('🏆 Tüm zamanlar puan tablosunu görüntüler'))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('puan-tablosu-sifirla')
+                .setDescription('Puan tablosunu sıfırlar (Sadece yöneticiler)')
         ),
 
     async execute(interaction) {
@@ -127,6 +135,51 @@ module.exports = {
                 .setTitle('🔄 Oyun Kanalı Sıfırlandı')
                 .setDescription(result.message)
                 .setColor('#FF9900')
+                .setTimestamp()
+                .setFooter({ text: `Sıfırlayan: ${interaction.user.tag}` });
+
+            await interaction.reply({ embeds: [embed] });
+        } else if (subcommand === 'puan-tablosu') {
+            const puanTablosu = puanTablosuGetir();
+
+            const embed = new EmbedBuilder()
+                .setTitle('🏆 Kelime Türetme - Tüm Zamanlar Puan Tablosu')
+                .setColor('#FFD700')
+                .setTimestamp();
+
+            if (puanTablosu.length === 0) {
+                embed.setDescription('📊 Henüz puan tablosunda kimse yok! İlk oyunu tamamlayın.');
+            } else {
+                let tabloMetni = '';
+                puanTablosu.slice(0, 10).forEach((oyuncu, index) => {
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+                    tabloMetni += `${medal} **${oyuncu.kullaniciAdi}**\n`;
+                    tabloMetni += `   ├─ Toplam Puan: **${oyuncu.toplamPuan}**\n`;
+                    tabloMetni += `   ├─ Kazanma: **${oyuncu.kazanilanOyunlar}** oyun\n`;
+                    tabloMetni += `   └─ Toplam Kelime: **${oyuncu.toplamKelime}**\n\n`;
+                });
+                
+                embed.setDescription(tabloMetni);
+                embed.setFooter({ text: `Toplam ${puanTablosu.length} oyuncu` });
+            }
+
+            await interaction.reply({ embeds: [embed] });
+            
+        } else if (subcommand === 'puan-tablosu-sifirla') {
+            // Sadece yöneticiler sıfırlayabilir
+            if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+                return interaction.reply({
+                    content: '❌ Bu komutu kullanmak için **Yönetici** yetkisine sahip olmanız gerekiyor!',
+                    ephemeral: true
+                });
+            }
+
+            const result = puanTablosuSifirla();
+
+            const embed = new EmbedBuilder()
+                .setTitle('🗑️ Puan Tablosu Sıfırlandı')
+                .setDescription(result.message + '\n\n⚠️ Tüm oyuncu puanları sıfırlandı!')
+                .setColor('#FF0000')
                 .setTimestamp()
                 .setFooter({ text: `Sıfırlayan: ${interaction.user.tag}` });
 

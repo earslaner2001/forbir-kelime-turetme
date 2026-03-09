@@ -1,10 +1,6 @@
 // index.js - Förbır - Kelime Türetme Bot
 const fs = require('fs');
 const path = require('path');
-const express = require('express');
-const app = express();
-app.get('/', (req, res) => res.send('Bot Aktif!'));
-app.listen(10000); // Render'ın varsayılan portu
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
 
@@ -64,7 +60,7 @@ client.on('interactionCreate', async interaction => {
 });
 
 // Bot hazır
-client.once('ready', () => {
+client.once('clientReady', () => {
     console.log(`✅ ${client.user.tag} aktif!`);
     console.log(`📊 ${client.guilds.cache.size} sunucuda hizmet veriliyor.`);
     

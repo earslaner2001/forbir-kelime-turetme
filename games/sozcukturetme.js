@@ -16,7 +16,9 @@ function loadData() {
             sonKullaniciID: null,
             oyunAktif: false,
             oyuncular: {},
-            kanalID: null
+            kanalID: null,
+            kullanilanKelimeler: [],
+            puanTablosu: {}
         };
         fs.writeFileSync(dataPath, JSON.stringify(defaultData, null, 2));
         return defaultData;
@@ -27,6 +29,8 @@ function loadData() {
     if (!data.hasOwnProperty('oyunAktif')) data.oyunAktif = false;
     if (!data.hasOwnProperty('oyuncular')) data.oyuncular = {};
     if (!data.hasOwnProperty('kanalID')) data.kanalID = null;
+    if (!data.hasOwnProperty('kullanilanKelimeler')) data.kullanilanKelimeler = [];
+    if (!data.hasOwnProperty('puanTablosu')) data.puanTablosu = {};
     
     return data;
 }
@@ -39,33 +43,48 @@ function saveData(data) {
 }
 
 /**
- * TDK API'sinden kelime kontrolü yap
+ * TDK API'sinden kelime kontrolü yap (retry mekanizması ile)
  * @param {string} kelime - Kontrol edilecek kelime
  * @returns {Promise<boolean>} - Kelime geçerliyse true, değilse false
  */
 async function tdkKelimeKontrol(kelime) {
-    try {
-        // Türkçe karakterleri encode etmek için encodeURIComponent kullanıyoruz
-        const encodedKelime = encodeURIComponent(kelime.toLocaleLowerCase('tr-TR'));
-        const url = `https://sozluk.gov.tr/gts?ara=${encodedKelime}`;
-        
-        const response = await axios.get(url, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            },
-            timeout: 5000 // 5 saniye timeout
-        });
+    const maxRetries = 2;
+    const kelimeLower = kelime.toLocaleLowerCase('tr-TR');
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+            const encodedKelime = encodeURIComponent(kelimeLower);
+            const url = `https://sozluk.gov.tr/gts?ara=${encodedKelime}`;
+            
+            const response = await axios.get(url, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'application/json',
+                    'Accept-Language': 'tr-TR,tr;q=0.9'
+                },
+                timeout: 8000, // 8 saniye timeout
+                validateStatus: (status) => status === 200
+            });
 
-        // TDK API'si başarılı sonuç döndüğünde array döner, bulunamazsa "error" döner
-        if (Array.isArray(response.data) && response.data.length > 0) {
-            return true;
+            // TDK API'si başarılı sonuç döndüğünde array döner
+            if (Array.isArray(response.data) && response.data.length > 0) {
+                return true;
+            }
+            return false;
+            
+        } catch (error) {
+            // Son denemeyse hatayı logla ve false dön
+            if (attempt === maxRetries) {
+                console.error(`TDK API hatası (${maxRetries + 1} deneme sonrası): ${error.message}`);
+                return false;
+            }
+            
+            // Yeniden denemeden önce kısa bir bekleme
+            await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
         }
-        return false;
-    } catch (error) {
-        console.error('TDK API hatası:', error.message);
-        // API hatası durumunda false döndür
-        return false;
     }
+    
+    return false;
 }
 
 /**
@@ -135,6 +154,28 @@ async function oyunuBitir(message, data, sebep) {
         data.oyuncular[message.author.id].kelimeSayisi += 1;
     }
     
+    // Puanları kalıcı tabloya kaydet
+    for (const [userId, stats] of Object.entries(data.oyuncular)) {
+        if (!data.puanTablosu[userId]) {
+            data.puanTablosu[userId] = {
+                toplamPuan: 0,
+                kazanilanOyunlar: 0,
+                toplamKelime: 0,
+                kullaniciAdi: stats.kullaniciAdi
+            };
+        }
+        data.puanTablosu[userId].toplamPuan += stats.kelimeSayisi;
+        data.puanTablosu[userId].toplamKelime += stats.kelimeSayisi;
+        data.puanTablosu[userId].kullaniciAdi = stats.kullaniciAdi; // İsim güncellemesi için
+    }
+    
+    // Kazananın istatistiklerini güncelle
+    const kazananId = Object.entries(data.oyuncular)
+        .sort(([, a], [, b]) => b.kelimeSayisi - a.kelimeSayisi)[0]?.[0];
+    if (kazananId && data.puanTablosu[kazananId]) {
+        data.puanTablosu[kazananId].kazanilanOyunlar += 1;
+    }
+    
     // Sıralama yap
     const sirali = Object.entries(data.oyuncular)
         .map(([userId, stats]) => ({
@@ -158,8 +199,30 @@ async function oyunuBitir(message, data, sebep) {
         skorTablosu += `${medal} **${oyuncu.kullaniciAdi}**: ${oyuncu.kelimeSayisi} kelime\n`;
     });
     
-    embed.addFields({ name: '🎯 Sıralama', value: skorTablosu || 'Hiç kelime yazılmadı' });
-    embed.setFooter({ text: `Kazanan: ${sirali[0]?.kullaniciAdi || 'Belirsiz'} 🎊` });
+    embed.addFields({ name: '🎯 Bu Tur Sıralaması', value: skorTablosu || 'Hiç kelime yazılmadı' });
+    
+    // Toplam puanları göster
+    let toplamPuanTablosu = '';
+    const toplamSirali = Object.entries(data.puanTablosu)
+        .map(([userId, stats]) => ({
+            userId,
+            toplamPuan: stats.toplamPuan,
+            kullaniciAdi: stats.kullaniciAdi,
+            kazanilanOyunlar: stats.kazanilanOyunlar
+        }))
+        .sort((a, b) => b.toplamPuan - a.toplamPuan)
+        .slice(0, 5);
+    
+    toplamSirali.forEach((oyuncu, index) => {
+        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅';
+        toplamPuanTablosu += `${medal} **${oyuncu.kullaniciAdi}**: ${oyuncu.toplamPuan} puan (${oyuncu.kazanilanOyunlar} zafer)\n`;
+    });
+    
+    if (toplamPuanTablosu) {
+        embed.addFields({ name: '🏆 Tüm Zamanlar Liderlik Tablosu', value: toplamPuanTablosu });
+    }
+    
+    embed.setFooter({ text: `Bu Turu Kazanan: ${sirali[0]?.kullaniciAdi || 'Belirsiz'} 🎊` });
     
     await message.channel.send({ embeds: [embed] });
     
@@ -169,6 +232,7 @@ async function oyunuBitir(message, data, sebep) {
     data.sonKullaniciID = null;
     data.oyunAktif = false;
     data.oyuncular = {};
+    data.kullanilanKelimeler = [];
     saveData(data);
 }
 
@@ -203,6 +267,12 @@ async function kelimeTuretmeOyunu(message) {
             return false;
         }
 
+        // Daha önce kullanılmış mı kontrol et
+        if (data.kullanilanKelimeler.includes(kelime)) {
+            await hataGonder(message, `❌ **"${kelime}"** kelimesi daha önce kullanıldı! Farklı bir kelime yazın.`);
+            return false;
+        }
+
         const sonHarf = sonHarfAl(kelime);
         
         // Devam edilemez harfle bitiyorsa oyunu başlatma
@@ -216,6 +286,7 @@ async function kelimeTuretmeOyunu(message) {
         data.sonHarf = sonHarf;
         data.sonKullaniciID = message.author.id;
         data.oyunAktif = true;
+        data.kullanilanKelimeler.push(kelime);
         data.oyuncular[message.author.id] = {
             kelimeSayisi: 1,
             kullaniciAdi: message.author.username
@@ -240,6 +311,12 @@ async function kelimeTuretmeOyunu(message) {
         return false;
     }
 
+    // Daha önce kullanılmış mı kontrol et
+    if (data.kullanilanKelimeler.includes(kelime)) {
+        await hataGonder(message, `❌ **"${kelime}"** kelimesi daha önce kullanıldı! Farklı bir kelime yazın.`);
+        return false;
+    }
+
     // TDK kontrolü
     const tdkGecerli = await tdkKelimeKontrol(kelime);
     if (!tdkGecerli) {
@@ -252,6 +329,8 @@ async function kelimeTuretmeOyunu(message) {
     
     // Devam edilemez harfle bitiyorsa oyunu bitir
     if (!devamEdilirHarf(yeniSonHarf)) {
+        // Son kelimeyi de kaydet
+        data.kullanilanKelimeler.push(kelime);
         await message.react('🏆');
         await oyunuBitir(message, data, `**${message.author.username}** tarafından yazılan **"${kelime}"** kelimesi **${yeniSonHarf.toUpperCase()}** harfi ile bitiyor ve bu harfle devam edilemez!`);
         return true;
@@ -261,6 +340,7 @@ async function kelimeTuretmeOyunu(message) {
     data.sonKelime = kelime;
     data.sonHarf = yeniSonHarf;
     data.sonKullaniciID = message.author.id;
+    data.kullanilanKelimeler.push(kelime);
     
     if (!data.oyuncular[message.author.id]) {
         data.oyuncular[message.author.id] = {
@@ -274,7 +354,6 @@ async function kelimeTuretmeOyunu(message) {
     saveData(data);
 
     await message.react('✅');
-    await message.reply(`✨ Doğru kelime! Puanın: **${data.oyuncular[message.author.id].kelimeSayisi}** | Son harf: **${yeniSonHarf.toUpperCase()}**`);
     return true;
 }
 
@@ -289,6 +368,7 @@ function oyunuSifirla() {
     data.sonKullaniciID = null;
     data.oyunAktif = false;
     data.oyuncular = {};
+    data.kullanilanKelimeler = [];
     // kanalID'yi sıfırlamıyoruz, ayar korunmalı
     saveData(data);
     return { success: true, message: 'Kelime türetme oyunu sıfırlandı!' };
@@ -325,11 +405,41 @@ function durumGetir() {
     return loadData();
 }
 
+/**
+ * Puan tablosunu getir
+ * @returns {Array} - Sıralı puan tablosu
+ */
+function puanTablosuGetir() {
+    const data = loadData();
+    return Object.entries(data.puanTablosu)
+        .map(([userId, stats]) => ({
+            userId,
+            toplamPuan: stats.toplamPuan,
+            kazanilanOyunlar: stats.kazanilanOyunlar,
+            toplamKelime: stats.toplamKelime,
+            kullaniciAdi: stats.kullaniciAdi
+        }))
+        .sort((a, b) => b.toplamPuan - a.toplamPuan);
+}
+
+/**
+ * Puan tablosunu sıfırla
+ * @returns {object} - Sonuç
+ */
+function puanTablosuSifirla() {
+    const data = loadData();
+    data.puanTablosu = {};
+    saveData(data);
+    return { success: true, message: 'Puan tablosu sıfırlandı!' };
+}
+
 module.exports = {
     kelimeTuretmeOyunu,
     oyunuSifirla,
     durumGetir,
     tdkKelimeKontrol,
     kanalBelirle,
-    kanalSifirla
+    kanalSifirla,
+    puanTablosuGetir,
+    puanTablosuSifirla
 };

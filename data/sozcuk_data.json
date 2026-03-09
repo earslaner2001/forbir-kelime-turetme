@@ -1,17 +1,60 @@
 {
-  "sonKelime": "korelasyon",
+  "sonKelime": "ekin",
   "sonHarf": "n",
-  "sonKullaniciID": "704300767271583804",
+  "sonKullaniciID": "1341409015896215562",
   "oyunAktif": true,
   "oyuncular": {
-    "704300767271583804": {
+    "1341409015896215562": {
       "kelimeSayisi": 2,
-      "kullaniciAdi": "mentoran"
+      "kullaniciAdi": "varlik67"
     },
-    "650052405420883969": {
+    "814206267471298580": {
       "kelimeSayisi": 1,
-      "kullaniciAdi": "yarlighan"
+      "kullaniciAdi": ".cileklipuding"
     }
   },
-  "kanalID": "827281373290299413"
+  "kanalID": "827281373290299413",
+  "kullanilanKelimeler": [
+    "hukuk",
+    "kinaye",
+    "ekin"
+  ],
+  "puanTablosu": {
+    "814206267471298580": {
+      "toplamPuan": 47,
+      "kazanilanOyunlar": 2,
+      "toplamKelime": 47,
+      "kullaniciAdi": ".cileklipuding"
+    },
+    "1341409015896215562": {
+      "toplamPuan": 13,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 13,
+      "kullaniciAdi": "varlik67"
+    },
+    "650052405420883969": {
+      "toplamPuan": 24,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 24,
+      "kullaniciAdi": "yarlighan"
+    },
+    "576437646755233832": {
+      "toplamPuan": 22,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 22,
+      "kullaniciAdi": "seckin_mustafa"
+    },
+    "688731655938113562": {
+      "toplamPuan": 6,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 6,
+      "kullaniciAdi": "erenjhj"
+    },
+    "535838220177375272": {
+      "toplamPuan": 5,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 5,
+      "kullaniciAdi": "bozkurtsipahi"
+    }
+  }
 }
