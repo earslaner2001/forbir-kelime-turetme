@@ -1,7 +1,7 @@
 {
   "name": "forbir-kelime-turetme",
-  "version": "1.0.0",
-  "description": "Förbır - Kelime Türetme Discord Bot",
+  "version": "1.1.0",
+  "description": "Förbır - Kelime Türetme Discord Bot (TDK API + Dashboard)",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {

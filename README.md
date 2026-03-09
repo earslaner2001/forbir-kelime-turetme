@@ -1,15 +1,29 @@
 # 🎮 Förbır - Kelime Türetme Discord Bot
 
-TDK (Türk Dil Kurumu) destekli Discord kelime türetme oyunu botu.
+**v1.1.0** - TDK (Türk Dil Kurumu) destekli Discord kelime türetme oyunu botu.
+
+[![Discord.js](https://img.shields.io/badge/discord.js-v14.20.0-blue.svg)](https://discord.js.org)
+[![Node.js](https://img.shields.io/badge/node.js-16%2B-green.svg)](https://nodejs.org)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 📋 Özellikler
 
+### 🎮 Oyun Özellikleri
 - ✅ **TDK API Entegrasyonu**: Her kelime TDK sözlüğünden kontrol edilir
 - 🏆 **Otomatik Puanlama**: Oyuncuların puanları otomatik takip edilir
 - 📊 **Skor Tablosu**: Oyun bittiğinde kazananlar otomatik sıralanır
 - 🎯 **Akıllı Oyun Bitişi**: Ğ, Q, W, X gibi harflerle oyun otomatik biter
 - 📍 **Kanal Yönetimi**: Oyun kanalını belirleme özelliği
-- ⚡ **Hızlı Kurulum**: Dakikalar içinde çalışır hale gelir
+- 🔄 **Kullanılan Kelime Kontrolü**: Aynı kelime tekrar kullanılamaz
+
+### 📊 Dashboard & API
+- 🌐 **Canlı Dashboard**: Modern, responsive web arayüzü
+- 📈 **Gerçek Zamanlı İstatistikler**: Oyuncu sayısı, kelime sayısı, liderlik tablosu
+- 🎨 **Glassmorphism Tasarım**: Smooth animasyonlar ve gradient arka plan
+- 🔄 **Otomatik Yenileme**: 30 saniyede bir güncellenir
+- 🔗 **REST API**: JSON formatında veri erişimi
+- 💪 **Hata Yönetimi**: API hatalarına karşı güvenli (v1.1.0)
+- ⚡ **Render Uyumlu**: Production ortamında sorunsuz çalışır
 
 ## 🚀 Hızlı Başlangıç
 
@@ -52,6 +66,25 @@ npm run deploy
 ```bash
 npm start
 ```
+
+### 6. Dashboard'a Erişim
+
+Bot başladıktan sonra tarayıcınızda:
+
+```
+http://localhost:10000
+```
+
+**Dashboard Özellikleri:**
+- 📊 Anlık istatistikler
+- 🏆 Liderlik tablosu (top 10)
+- 🎯 Aktif oyun durumu
+- 📝 Son kelime ve devam harfi
+
+**API Endpoints:**
+- `GET /` - Dashboard ana sayfa
+- `GET /api/stats` - JSON istatistikler
+- `GET /health` - Health check
 
 ## 🎮 Kullanım
 
@@ -101,7 +134,7 @@ Bot: 🏆
 forbir-kelime-turetme/
 │
 ├── games/
-│   └── sozcukturetme.js         # Oyun motoru
+│   └── sozcukturetme.js         # Oyun motoru & API hata yönetimi
 │
 ├── commands/
 │   └── kelime-oyunu.js           # Slash command
@@ -110,13 +143,14 @@ forbir-kelime-turetme/
 │   └── sozcukOyunu.js            # Message event handler
 │
 ├── data/
-│   └── sozcuk_data.json          # Oyun verileri
+│   └── sozcuk_data.json          # Oyun verileri (JSON)
 │
-├── index.js                       # Ana bot dosyası
+├── index.js                       # Ana bot + Express Dashboard
 ├── deploy-commands.js             # Slash command kayıt
 ├── package.json                   # Bağımlılıklar
 ├── .env.example                   # Örnek env dosyası
-└── README.md                      # Bu dosya
+├── start.bat                      # Windows başlatma scripti
+└── README.md                      # Dokümantasyon
 ```
 
 ## 🔧 Geliştirme
@@ -161,6 +195,17 @@ komutunu tekrar çalıştırın.
 
 - İnternet bağlantınızı kontrol edin
 - TDK API'si erişilebilir durumda mı?
+- Bot otomatik retry mekanizması ile 3 kez dener
+
+### Discord API Error [10008]: Unknown Message
+
+✅ **Çözüldü v1.1.0**: Tüm mesaj reaksiyonları ve yanıtları artık hata yönetimine sahip. Kullanıcı mesajını silse bile bot çalışmaya devam eder.
+
+### Dashboard yüklenmiyor
+
+- Port numarası doğru mu? (varsayılan: 10000)
+- `data/sozcuk_data.json` dosyası var mı?
+- Console'da hata var mı kontrol edin
 
 ## 📊 Veri Yönetimi
 
@@ -178,15 +223,68 @@ Oyun verileri `data/sozcuk_data.json` dosyasında saklanır:
       "kullaniciAdi": "Kullanıcı1"
     }
   },
+  "kullanilanKelimeler": ["merhaba", "araba"],
+  "puanTablosu": {
+    "123456789": {
+      "toplamPuan": 25,
+      "kazanilanOyunlar": 3,
+      "toplamKelime": 25,
+      "kullaniciAdi": "Kullanıcı1"
+    }
+  },
   "kanalID": "555666777"
 }
 ```
+
+## 🌐 Render Deployment
+
+### Kurulum Adımları
+
+1. Render.com'da yeni **Web Service** oluşturun
+2. GitHub repository'nizi bağlayın
+3. Environment Variables ekleyin:
+   - `TOKEN` = Discord bot token
+   - `CLIENT_ID` = Discord client ID
+   - `PORT` = 10000 (otomatik atanır)
+4. Build Command: `npm install`
+5. Start Command: `npm start`
+6. Deploy edin!
+
+### Dashboard URL
+
+Render deployment sonrası:
+```
+https://your-app-name.onrender.com
+```
+
+### Özellikler
+- ✅ Otomatik SSL sertifikası
+- ✅ Health check endpoint (`/health`)
+- ✅ 24/7 çalışır durumda
+- ✅ API hata yönetimi (v1.1.0 ile iyileştirildi)
 
 ## 🔗 Bağlantılar
 
 - **Discord.js Dokümantasyonu**: https://discord.js.org/
 - **TDK Sözlük API**: https://sozluk.gov.tr/
 - **Discord Developer Portal**: https://discord.com/developers/applications
+- **Render Hosting**: https://render.com/
+
+## 📝 Changelog
+
+### v1.1.0 (Mart 2026)
+- ✨ **Dashboard eklendi**: Modern web arayüzü ile gerçek zamanlı istatistikler
+- 🔧 **API hata yönetimi**: Discord API hatalarına karşı güvenli (Error 10008 fixed)
+- 🎨 **Glassmorphism tasarım**: Gradient arka plan ve smooth animasyonlar
+- 📊 **REST API**: `/api/stats` endpoint'i eklendi
+- 💪 **Production ready**: Render deployment için optimize edildi
+- ⚡ **Health check**: `/health` endpoint'i eklendi
+
+### v1.0.0
+- 🎮 İlk sürüm
+- ✅ TDK API entegrasyonu
+- 🏆 Otomatik puanlama sistemi
+- 📊 Skor tablosu
 
 ## 📄 Lisans
 
@@ -198,6 +296,8 @@ MIT License
 - GitHub Copilot
 
 ---
+
+**⭐ Projeyi beğendiyseniz yıldız vermeyi unutmayın!**
 
 **Förbır - Kelime Türetme** ile Discord sunucularınızda eğlenceli kelime oyunları oynayın! 🎉
 

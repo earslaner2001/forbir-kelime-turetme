@@ -117,12 +117,17 @@ async function hataGonder(message, hataMesaji) {
             try {
                 await yanit.delete();
             } catch (err) {
-                // Mesaj zaten silinmişse hata vermemesi için
-                console.log('Mesaj silinemedi (zaten silinmiş olabilir)');
+                // Mesaj zaten silinmişse hata vermemesi için (kod 10008: Unknown Message)
+                if (err.code !== 10008) {
+                    console.log('Mesaj silinemedi:', err.message);
+                }
             }
         }, 5000);
     } catch (error) {
-        console.error('Hata mesajı gönderilemedi:', error.message);
+        // Yanıt gönderilemiyorsa (mesaj silinmiş veya kanal erişilemez)
+        if (error.code !== 10008) {
+            console.error('Hata mesajı gönderilemedi:', error.message);
+        }
     }
 }
 
@@ -224,7 +229,11 @@ async function oyunuBitir(message, data, sebep) {
     
     embed.setFooter({ text: `Bu Turu Kazanan: ${sirali[0]?.kullaniciAdi || 'Belirsiz'} 🎊` });
     
-    await message.channel.send({ embeds: [embed] });
+    try {
+        await message.channel.send({ embeds: [embed] });
+    } catch (error) {
+        console.error('Oyun sonu mesajı gönderilemedi:', error.message);
+    }
     
     // Oyunu sıfırla
     data.sonKelime = null;
@@ -293,8 +302,20 @@ async function kelimeTuretmeOyunu(message) {
         };
         saveData(data);
 
-        await message.react('✅');
-        await message.reply(`🎯 Kelime türetme oyunu başladı! Son harf: **${sonHarf.toUpperCase()}**`);
+        try {
+            await message.react('✅');
+        } catch (error) {
+            // Mesaj silinmişse veya erisilemiryorsa sessizce devam et
+            if (error.code !== 10008) {
+                console.error('Reaksiyon eklenemedi:', error.message);
+            }
+        }
+        
+        try {
+            await message.reply(`🎯 Kelime türetme oyunu başladı! Son harf: **${sonHarf.toUpperCase()}**`);
+        } catch (error) {
+            console.error('Yanıt gönderilemedi:', error.message);
+        }
         return true;
     }
 
@@ -331,7 +352,16 @@ async function kelimeTuretmeOyunu(message) {
     if (!devamEdilirHarf(yeniSonHarf)) {
         // Son kelimeyi de kaydet
         data.kullanilanKelimeler.push(kelime);
-        await message.react('🏆');
+        
+        try {
+            await message.react('🏆');
+        } catch (error) {
+            // Mesaj silinmişse veya erisilemiryorsa sessizce devam et
+            if (error.code !== 10008) {
+                console.error('Reaksiyon eklenemedi:', error.message);
+            }
+        }
+        
         await oyunuBitir(message, data, `**${message.author.username}** tarafından yazılan **"${kelime}"** kelimesi **${yeniSonHarf.toUpperCase()}** harfi ile bitiyor ve bu harfle devam edilemez!`);
         return true;
     }
@@ -353,7 +383,15 @@ async function kelimeTuretmeOyunu(message) {
     
     saveData(data);
 
-    await message.react('✅');
+    try {
+        await message.react('✅');
+    } catch (error) {
+        // Mesaj silinmişse veya erisilemiryorsa sessizce devam et
+        if (error.code !== 10008) {
+            console.error('Reaksiyon eklenemedi:', error.message);
+        }
+    }
+    
     return true;
 }
 
