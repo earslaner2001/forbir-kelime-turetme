@@ -1,6 +1,13 @@
 // index.js - Förbır - Kelime Türetme Bot
 const fs = require('fs');
 const path = require('path');
+const express = require('express');
+const app = express();
+app.get('/', (req, res) => res.send('Bot Aktif!'));
+const port = process.env.PORT || 10000;
+app.listen(port, () => {
+    console.log(`Web sunucusu ${port} portunda aktif!`);
+});
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
 
