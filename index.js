@@ -85,7 +85,8 @@ process.on('unhandledRejection', error => {
 client.login(process.env.TOKEN);
 
 // Dashboard Routes
-const dataPath = path.join(__dirname, 'data/sozcuk_data.json');
+const dataPath = path.join(__dirname, 'data', 'sozcuk_data.json');
+const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
 // Public klasörünü statik dosyalar için kullan
 app.use(express.static(path.join(__dirname, 'public')));
