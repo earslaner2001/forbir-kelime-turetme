@@ -224,7 +224,6 @@ app.get('/health', (req, res) => {
 });
 
 // Sunucuyu başlat
-app.listen(port, () => {
-    console.log(`🌐 Dashboard ${port} portunda çalışıyor!`);
-    console.log(`📊 Dashboard URL: http://localhost:${port}`);
+app.listen(port, "0.0.0.0", () => {
+    console.log(`Dashboard ${port} portunda dış dünyaya açıldı!`);
 });
