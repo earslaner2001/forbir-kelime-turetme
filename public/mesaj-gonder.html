@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesaj Gönder - Förbır Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <button class="theme-switcher" aria-label="Theme Switcher" type="button">
+        <span id="theme-icon">🌙</span>
+    </button>
+
+    <nav class="container-fluid">
+        <div>
+            <strong>🎮 Förbır Dashboard</strong>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="/" class="contrast">Ana Sayfa</a>
+            <a href="/mesaj-gonder.html" class="contrast active">Mesaj Gönder</a>
+        </div>
+    </nav>
+
+    <main class="container" style="max-width: 800px;">
+        <header style="text-align: center; margin: 1rem 0;">
+            <h1 style="color: var(--pico-contrast); font-size: 1.8rem; margin-bottom: 0.25rem;">📨 Kanal Mesaj Gönderici</h1>
+            <p style="color: var(--pico-muted-color); font-size: 0.9rem;">Belirtilen Discord kanalına mesaj gönderin</p>
+        </header>
+
+        <article class="glass-card">
+            <form id="message-form">
+                <div style="margin-bottom: 1rem;">
+                    <label for="channelId">
+                        <strong style="font-size: 0.95rem;">Kanal ID</strong>
+                        <small style="display: block; opacity: 0.8; margin-top: 0.25rem; font-size: 0.8rem;">
+                            Discord kanalına sağ tıklayıp "Kimliği Kopyala" seçeneğini kullanın
+                        </small>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="channelId" 
+                        name="channelId" 
+                        placeholder="Örnek: 1234567890123456789"
+                        pattern="[0-9]{17,19}"
+                        required
+                        aria-label="Kanal ID"
+                    />
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label for="messageContent">
+                        <strong style="font-size: 0.95rem;">Mesaj İçeriği</strong>
+                        <small style="display: block; opacity: 0.8; margin-top: 0.25rem; font-size: 0.8rem;">
+                            Göndermek istediğiniz mesajı yazın
+                        </small>
+                    </label>
+                    <textarea 
+                        id="messageContent" 
+                        name="messageContent" 
+                        rows="5"
+                        placeholder="Merhaba! Bu bir test mesajıdır."
+                        required
+                        aria-label="Mesaj İçeriği"
+                    ></textarea>
+                </div>
+
+                <div id="response-message" style="margin-bottom: 1rem; text-align: center; font-weight: 500; font-size: 0.9rem;"></div>
+
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button type="submit" class="contrast" id="send-button">
+                        📤 Mesaj Gönder
+                    </button>
+                    <button type="button" class="secondary" onclick="clearForm()">
+                        🗑️ Temizle
+                    </button>
+                </div>
+            </form>
+        </article>
+
+        <article class="glass-card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem;">💡 Nasıl Kullanılır?</h3>
+            <ol style="line-height: 1.6; font-size: 0.9rem; margin: 0.5rem 0 0.5rem 1.25rem;">
+                <li style="margin-bottom: 0.4rem;"><strong>Kanal ID'sini bulun:</strong> Discord'da mesaj göndermek istediğiniz kanala sağ tıklayın ve "Kimliği Kopyala" seçeneğini seçin.</li>
+                <li style="margin-bottom: 0.4rem;"><strong>ID'yi yapıştırın:</strong> Kopyaladığınız ID'yi yukarıdaki "Kanal ID" alanına yapıştırın.</li>
+                <li style="margin-bottom: 0.4rem;"><strong>Mesajınızı yazın:</strong> Göndermek istediğiniz mesajı "Mesaj İçeriği" alanına yazın.</li>
+                <li style="margin-bottom: 0.4rem;"><strong>Gönderin:</strong> "Mesaj Gönder" butonuna tıklayın.</li>
+            </ol>
+            <p style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(255, 193, 7, 0.1); border-radius: var(--pico-border-radius); border-left: 4px solid #ffc107; font-size: 0.85rem;">
+                <strong>⚠️ Not:</strong> Botun mesaj göndermek istediğiniz kanala erişimi olmalıdır. Aksi takdirde mesaj gönderilemez.
+            </p>
+        </article>
+    </main>
+
+    <script src="/common.js"></script>
+    <script>
+        const form = document.getElementById('message-form');
+        const responseMessage = document.getElementById('response-message');
+        const sendButton = document.getElementById('send-button');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const channelId = document.getElementById('channelId').value.trim();
+            const messageContent = document.getElementById('messageContent').value.trim();
+            
+            if (!channelId || !messageContent) {
+                showMessage('❌ Lütfen tüm alanları doldurun!', 'error');
+                return;
+            }
+            
+            // Disable button while sending
+            sendButton.disabled = true;
+            sendButton.innerHTML = '⏳ Gönderiliyor...';
+            
+            try {
+                const response = await fetch('/api/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        channelId, 
+                        message: messageContent 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('✅ ' + data.message, 'success');
+                    // Clear message content after successful send
+                    document.getElementById('messageContent').value = '';
+                } else {
+                    showMessage('❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Bir hata oluştu: ' + error.message, 'error');
+                console.error('Mesaj gönderme hatası:', error);
+            } finally {
+                // Re-enable button
+                sendButton.disabled = false;
+                sendButton.innerHTML = '📤 Mesaj Gönder';
+            }
+        });
+
+        function showMessage(message, type) {
+            responseMessage.innerHTML = `<span style="color: ${type === 'success' ? '#10b981' : '#ef4444'}">${message}</span>`;
+            
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                responseMessage.innerHTML = '';
+            }, 5000);
+        }
+
+        function clearForm() {
+            document.getElementById('channelId').value = '';
+            document.getElementById('messageContent').value = '';
+            responseMessage.innerHTML = '';
+        }
+    </script>
+</body>
+</html>

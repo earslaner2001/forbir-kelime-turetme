@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Förbır - Kelime Türetme Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <button class="theme-switcher" aria-label="Theme Switcher" type="button">
+        <span id="theme-icon">🌙</span>
+    </button>
+
+    <nav class="container-fluid">
+        <div>
+            <strong>🎮 Förbır Dashboard</strong>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="/" class="contrast active">Ana Sayfa</a>
+            <a href="/mesaj-gonder.html" class="contrast">Mesaj Gönder</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header style="text-align: center; margin: 1rem 0;">
+            <h1 style="color: var(--pico-contrast); font-size: 1.8rem; margin-bottom: 0.25rem;">🎮 Förbır - Kelime Türetme</h1>
+            <p style="color: var(--pico-muted-color); font-size: 0.9rem;">Discord Bot Dashboard</p>
+        </header>
+
+        <div id="stats-grid" class="grid">
+            <div class="glass-card stat-card">
+                <div class="stat-icon">🤖</div>
+                <div class="stat-value" id="sunucuSayisi">-</div>
+                <div class="stat-label">Sunucu</div>
+            </div>
+            <div class="glass-card stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value" id="toplamOyuncu">-</div>
+                <div class="stat-label">Toplam Oyuncu</div>
+            </div>
+            <div class="glass-card stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-value" id="toplamKelime">-</div>
+                <div class="stat-label">Kullanılan Kelime</div>
+            </div>
+            <div class="glass-card stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value" id="aktifOyuncular">-</div>
+                <div class="stat-label">Anlık Oyuncu</div>
+            </div>
+        </div>
+
+        <article class="glass-card" id="oyun-durumu">
+            <h2 style="font-size: 1.3rem; margin-bottom: 0.75rem;">🎯 Oyun Durumu</h2>
+            <div id="status-badge" class="status-badge status-inactive">● YÜKLENİYOR</div>
+            <div id="oyun-detay"></div>
+        </article>
+
+        <article class="glass-card">
+            <h2 style="font-size: 1.3rem; margin-bottom: 0.75rem;">🏆 Tüm Zamanlar Liderlik Tablosu</h2>
+            <div id="liderler-listesi">
+                <p style="text-align: center; padding: 1.5rem; opacity: 0.6; font-size: 0.9rem;">Yükleniyor...</p>
+            </div>
+        </article>
+
+        <footer style="text-align: center; margin: 1rem 0; opacity: 0.7; color: var(--pico-muted-color);">
+            <p style="margin: 0.25rem 0;"><small style="font-size: 0.75rem;">⟳ Sayfa otomatik olarak 30 saniyede bir yenilenir</small></p>
+            <p style="margin: 0.25rem 0;"><small style="font-size: 0.75rem;" id="last-update">Son güncelleme: -</small></p>
+        </footer>
+    </main>
+
+    <script src="/common.js"></script>
+    <script src="/dashboard.js"></script>
+</body>
+</html>

@@ -1,60 +1,175 @@
 {
-  "sonKelime": "ekin",
-  "sonHarf": "n",
-  "sonKullaniciID": "1341409015896215562",
+  "sonKelime": "rota",
+  "sonHarf": "a",
+  "sonKullaniciID": "814206267471298580",
   "oyunAktif": true,
   "oyuncular": {
-    "1341409015896215562": {
-      "kelimeSayisi": 2,
-      "kullaniciAdi": "varlik67"
+    "576437646755233832": {
+      "kelimeSayisi": 32,
+      "kullaniciAdi": "seckin_mustafa"
     },
     "814206267471298580": {
-      "kelimeSayisi": 1,
+      "kelimeSayisi": 32,
       "kullaniciAdi": ".cileklipuding"
     }
   },
   "kanalID": "827281373290299413",
   "kullanilanKelimeler": [
-    "hukuk",
-    "kinaye",
-    "ekin"
+    "hain",
+    "nefes",
+    "sanat",
+    "tasvir",
+    "rampa",
+    "an",
+    "nal",
+    "lan",
+    "nalbur",
+    "risk",
+    "kurt",
+    "türk",
+    "kafes",
+    "ses",
+    "sistem",
+    "morfin",
+    "narkoz",
+    "zift",
+    "taht",
+    "tansiyon",
+    "nur",
+    "retina",
+    "ada",
+    "adam",
+    "madam",
+    "matem",
+    "matematik",
+    "kanser",
+    "rant",
+    "tiz",
+    "zalim",
+    "miyop",
+    "psikoz",
+    "zan",
+    "naz",
+    "zam",
+    "mal",
+    "lama",
+    "akıl",
+    "loş",
+    "şık",
+    "kış",
+    "şirk",
+    "kim",
+    "mayın",
+    "net",
+    "turta",
+    "ala",
+    "ak",
+    "kat",
+    "tat",
+    "tut",
+    "tur",
+    "ruh",
+    "hal",
+    "lal",
+    "lale",
+    "el",
+    "lokomotif",
+    "fan",
+    "nar",
+    "ring",
+    "gür",
+    "rota"
   ],
   "puanTablosu": {
     "814206267471298580": {
-      "toplamPuan": 47,
-      "kazanilanOyunlar": 2,
-      "toplamKelime": 47,
+      "toplamPuan": 359,
+      "kazanilanOyunlar": 12,
+      "toplamKelime": 359,
       "kullaniciAdi": ".cileklipuding"
     },
-    "1341409015896215562": {
-      "toplamPuan": 13,
-      "kazanilanOyunlar": 0,
-      "toplamKelime": 13,
-      "kullaniciAdi": "varlik67"
+    "704300767271583804": {
+      "toplamPuan": 159,
+      "kazanilanOyunlar": 2,
+      "toplamKelime": 159,
+      "kullaniciAdi": "mentoran"
     },
     "650052405420883969": {
-      "toplamPuan": 24,
+      "toplamPuan": 30,
       "kazanilanOyunlar": 0,
-      "toplamKelime": 24,
+      "toplamKelime": 30,
       "kullaniciAdi": "yarlighan"
     },
     "576437646755233832": {
-      "toplamPuan": 22,
+      "toplamPuan": 98,
       "kazanilanOyunlar": 0,
-      "toplamKelime": 22,
+      "toplamKelime": 98,
       "kullaniciAdi": "seckin_mustafa"
     },
+    "1341409015896215562": {
+      "toplamPuan": 63,
+      "kazanilanOyunlar": 1,
+      "toplamKelime": 63,
+      "kullaniciAdi": "varlik67"
+    },
     "688731655938113562": {
-      "toplamPuan": 6,
+      "toplamPuan": 9,
       "kazanilanOyunlar": 0,
-      "toplamKelime": 6,
+      "toplamKelime": 9,
       "kullaniciAdi": "erenjhj"
     },
     "535838220177375272": {
-      "toplamPuan": 5,
+      "toplamPuan": 26,
       "kazanilanOyunlar": 0,
-      "toplamKelime": 5,
+      "toplamKelime": 26,
       "kullaniciAdi": "bozkurtsipahi"
+    },
+    "1277328062324936706": {
+      "toplamPuan": 364,
+      "kazanilanOyunlar": 9,
+      "toplamKelime": 364,
+      "kullaniciAdi": "omerkursun"
+    },
+    "888919767652646943": {
+      "toplamPuan": 53,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 53,
+      "kullaniciAdi": "riyonna"
+    },
+    "342335563384225792": {
+      "toplamPuan": 4,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 4,
+      "kullaniciAdi": "forbir"
+    },
+    "143748079571435521": {
+      "toplamPuan": 12,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 12,
+      "kullaniciAdi": "istedu"
+    },
+    "1288179983671492648": {
+      "toplamPuan": 24,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 24,
+      "kullaniciAdi": "musi01musione"
+    },
+    "1374441505460191303": {
+      "toplamPuan": 23,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 23,
+      "kullaniciAdi": "eadwig__74035"
+    },
+    "1482849449167552534": {
+      "toplamPuan": 27,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 27,
+      "kullaniciAdi": "lttlcrn."
+    },
+    "1349450983373279322": {
+      "toplamPuan": 105,
+      "kazanilanOyunlar": 0,
+      "toplamKelime": 105,
+      "kullaniciAdi": "ogkero"
     }
   }
 }
