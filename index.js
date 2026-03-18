@@ -224,7 +224,11 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Sunucuyu başlat
+// Railway'in Health Check yapabilmesi için ana dizine bir yanıt ekle
+app.get('/', (req, res) => {
+    res.status(200).send('OK');
+});
+
 app.listen(port, "0.0.0.0", () => {
-    console.log(`Dashboard ${port} portunda dış dünyaya açıldı!`);
+    console.log(`Bot ${port} portunda aktif!`);
 });
