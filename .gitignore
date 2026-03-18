@@ -8,8 +8,8 @@ node_modules/
 *.log
 npm-debug.log*
 
-# Data files (optional - git'e eklemek isterseniz kaldırın)
-# data/sozcuk_data.json
+# Data files - Railway Volume tarafından yönetilir, git'e eklenmez
+data/sozcuk_data.json
 
 # OS files
 .DS_Store
