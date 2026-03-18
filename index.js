@@ -6,7 +6,7 @@ const { Client, Collection, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 10000;
+const port = process.env.PORT || 8080;
 
 // Body parser middleware
 app.use(express.json());
