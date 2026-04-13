@@ -292,7 +292,7 @@ MIT License
 
 ## 🙏 Katkıda Bulunanlar
 
-- Förbır Team
+- [earslaner2001](https://github.com/earslaner2001)
 - GitHub Copilot
 
 ---
