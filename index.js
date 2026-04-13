@@ -229,6 +229,6 @@ app.get('/', (req, res) => {
     res.status(200).send('OK');
 });
 
-app.listen(port, "0.0.0.0", () => {
+buapp.listen(port, "0.0.0.0", () => {
     console.log(`Bot ${port} portunda aktif!`);
 });
